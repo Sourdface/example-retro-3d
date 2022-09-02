@@ -6,7 +6,7 @@
 
 [Play Now](https://bradharms.github.io/inthepipes-game)
 
-> **NOTE:** For best results, play in the browser's full-screen mode on a 16:9 screen.
+> **NOTE:** For best results, play in full-screen mode on a 16:9 wide-screen screen display.
 
 ## How to Play
 
