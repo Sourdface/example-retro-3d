@@ -6,7 +6,7 @@
 
 ## How to Play
 
-This demo requires no build tools or local software other than a common, modern web browsers. Chrome-based browsers are preferred, but other browsers should also work.
+This demo requires no build tools or local software other than a common, modern web browser. Chrome-based browsers are preferred, but other browsers should also work.
 
 To run the demo, download all files and open `index.html` in a web browser. For best results, play in the browser's full-screen mode on a 16:9 screen.
 
