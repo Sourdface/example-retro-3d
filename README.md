@@ -8,8 +8,17 @@ This demo requires no build tools or local software other than common, modern we
 
 ### Controls
 
+Keyboard and Xbox One controllers are both supported. (Other types of joysticks or gamepads will also work but the button mappings will be different.)
+
+#### Keyboard Controls
+
 - **Left, Right, Up, Down**: Walk.
 - **Space**: Jump. Hold longer to jump higher.
+
+#### Xbox One Controls
+
+- **Dpad**: Walk.
+- **X**: Jump. Hold longer to jump higher.
 
 ### Objectives
 
@@ -63,7 +72,6 @@ There is no universal, central physics controller. Instead, any necessary physic
 
 ## TODO
 
-- [ ] Add support for joysticks
 - [ ] Add sound based on audio context
 - [ ] Rewrite drawing engine to use memory-mapped tile and sprites similar to 8 and 16 bit era PPUs
 - [ ] Render graphics as individual scanlines with support for hsync interrupt handlers
