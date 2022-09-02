@@ -56,11 +56,10 @@ Additionally, closures are typically avoided whenever possible. For closure-like
 
 The rendering engine is based on a few core concepts:
 
-- Only use basic 2D geometry functions for drawing, even for 3D objects. (Primarily rectangles.)
-- Use a coordinate system based on a unit that is meaningful to the physics engine: Grid cells.
-- Determine canvas resolution based on the number of pixels in a cell, not the other way around.
-- Use the lowest resolution possible.
-- Represent colors in the lowest bit depth possible.
+- **Only use basic 2D geometry functions for drawing, even for 3D objects.** (Primarily rectangles.)
+- **Use a coordinate system based on a unit that is meaningful to the physics engine: Grid cells.**
+- **Use the lowest resolution possible.** Canvas resolution based on the number of pixels in a cell, not the other way around.**
+- **Represent colors in the lowest bit depth possible.** Currently, color is represented using 9-bit color (3 bits per color channel) for every object drawn to the screen, and no alpha transparency is used. Lighting effects are achieved by choosing a different color for a rectangle out of the possible 9-bit color palette based on distance from the camera and the object's "base" color.
 
 ## Physics
 
