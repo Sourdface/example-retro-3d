@@ -4,13 +4,15 @@
 
 ![Screenshot](./screenshot.png)
 
-## How to Play
-
 [Play Now](https://bradharms.github.io/inthepipes-game)
+
+> **NOTE:** For best results, play in the browser's full-screen mode on a 16:9 screen.
+
+## How to Play
 
 This app requires no build tools or local software other than a common, modern web browser. Chrome-based browsers are preferred, but other browsers should also work.
 
-To run the app from your own system, download or clone all files and open `index.html` in a web browser. For best results, play in the browser's full-screen mode on a 16:9 screen.
+You can click the link above to run the current source code directly in the current browser window. Alternatively, to run the app from your own device, download or clone all files and open `index.html` in a web browser.
 
 > **NOTE:** See [Same Origin Policy](#same-origin-policy) for details about running the demo directly from the filesystem.
 
