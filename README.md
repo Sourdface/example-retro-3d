@@ -1,4 +1,6 @@
-Platformer demo in pure JavaScript.
+# In the Pipes
+
+3D retro platformer game demo in vanilla JavaScript.
 
 ## How to Play
 
@@ -71,9 +73,8 @@ There is no universal, central physics controller. Instead, any necessary physic
 
 ## TODO
 
+- [ ] Add an NTSC filter effect
 - [ ] Add sound based on audio context
-- [ ] Rewrite drawing engine to use memory-mapped tile and sprites similar to 8 and 16 bit era PPUs
-- [ ] Render graphics as individual scanlines with support for hsync interrupt handlers
 - [ ] Add support for saving levels to local filesystem
 - [ ] Add support for loading levels from the filesystem
 - [ ] Enemies, health, and attacks
