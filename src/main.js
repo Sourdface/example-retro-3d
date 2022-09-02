@@ -23,6 +23,8 @@ window.onload = () => {
 }
 
 function update() {
+  Input.preUpdate();
+
   Wall.update();
   Player.update();
   Coin.update();

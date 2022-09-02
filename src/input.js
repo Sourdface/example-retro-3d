@@ -7,10 +7,10 @@
  */
 
 /**
- * @typedef InputState
- *
  * State of a specific individual input.
  *
+ * @exports InputState
+ * @typedef InputState
  * @prop {boolean} pressed Whether the input is currently pressed.
  * @prop {boolean} pressedPrevious Whether the input was pressed in the previous frame.
  * @prop {boolean} justPressed Whether the input was just pressed in the current frame.
@@ -18,29 +18,17 @@
  */
 
 /**
- * @typedef InputStates
- *
  * State for each user input.
  *
+ * @exports InputStates
+ * @typedef InputStates
  * @prop {InputState} left
  * @prop {InputState} right
  * @prop {InputState} up
  * @prop {InputState} down
  * @prop {InputState} a
+ * @prop {InputState} b
  */
-
-/**
- * Maps key codes to input names.
- *
- * @type {{ [key: string]: keyof InputStates }}
- */
-export const keyInputs = {
-  'ArrowLeft': 'left',
-  'ArrowRight': 'right',
-  'ArrowUp': 'up',
-  'ArrowDown': 'down',
-  ' ': 'a',
-}
 
 /**
  * @type {Readonly<InputState>}
@@ -53,7 +41,37 @@ const _DEFAULT_INPUT_STATE = {
 };
 
 /**
- * User input state for the current frame.
+ * @type {Gamepad|null}
+ */
+let _gamepad = null;
+
+/**
+ * Maps key codes to input names.
+ *
+ * @type {{ [key: string]: keyof InputStates }}
+ */
+export const keyInputs = {
+  'ArrowLeft': 'left',
+  'ArrowRight': 'right',
+  'ArrowUp': 'up',
+  'ArrowDown': 'down',
+  ' ': 'a',
+};
+
+/**
+ * @type {{ [key: number]: keyof InputStates }}
+ */
+export const gamepadButtonInputs = {
+  0: 'a',
+  1: 'b',
+  12: 'up',
+  13: 'down',
+  14: 'left',
+  15: 'right',
+};
+
+/**
+ * User input state for the current and previous frames.
  *
  * @type {Readonly<{[K in keyof InputStates]: Readonly<InputStates[K]>}>}
  */
@@ -63,11 +81,7 @@ export const state = {
   up: { ..._DEFAULT_INPUT_STATE },
   down: { ..._DEFAULT_INPUT_STATE },
   a: { ..._DEFAULT_INPUT_STATE },
-}
-
-export function setup() {
-  window.addEventListener('keydown', _onKeyDown);
-  window.addEventListener('keyup', _onKeyUp);
+  b: { ..._DEFAULT_INPUT_STATE },
 }
 
 /**
@@ -88,6 +102,55 @@ function _onKeyUp(e) {
   }
 }
 
+/**
+ *
+ * @param {GamepadEvent} e
+ */
+function _onGamepadConnected(e) {
+  if (!_gamepad) {
+    _gamepad = e.gamepad;
+  }
+}
+
+/**
+ * @param {GamepadEvent} e
+ */
+function _onGamepadDisconnected(e) {
+
+}
+
+export function setup() {
+  window.addEventListener('keydown', _onKeyDown);
+  window.addEventListener('keyup', _onKeyUp);
+  window.addEventListener('gamepadconnected', _onGamepadConnected);
+  window.addEventListener('gamepaddisconnected', _onGamepadDisconnected);
+}
+
+/**
+ * Runs once per frame for this module, but before `update()` for this or any other module is called.
+ */
+export function preUpdate() {
+  if (!_gamepad) {
+    return;
+  }
+  for (const gamepad of navigator.getGamepads()) {
+    if (!gamepad || gamepad.index !== _gamepad.index) {
+      continue;
+    }
+
+    for (let btnId in gamepadButtonInputs) {
+      if (!(btnId in gamepad.buttons)) {
+        continue;
+      }
+      /** @type {InputState} */ (state[gamepadButtonInputs[btnId]])
+        .pressed = gamepad.buttons[btnId].pressed;
+    }
+  }
+}
+
+/**
+ * Runs once per frame for this module
+ */
 export function update() {
   for (const key in state) {
     /** @type {InputState} */
