@@ -9,6 +9,7 @@
 /**
  * Whether or not debug mode is enabled.
  */
+// eslint-disable-next-line prefer-const
 export let enabled = true;
 
 /**

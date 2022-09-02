@@ -1,8 +1,8 @@
 // @ts-check
 
-import * as Wall from "./wall.js";
-import * as Coin from "./coin.js";
-import * as Draw from "./draw2d.js";
+import * as Wall from './wall.js';
+import * as Coin from './coin.js';
+import * as Draw from './draw2d.js';
 
 export function setup() {
   Wall.set(Wall.next(), 0, 0, 16, Draw.gridSize.x, Draw.gridSize.y, 1, true, true);
@@ -25,4 +25,8 @@ export function setup() {
   Coin.set(Coin.next(), 24, 10, 0);
   Coin.set(Coin.next(), 26, 6, 12);
   Coin.set(Coin.next(), 18, 14, 4);
+}
+
+export function update() {
+
 }

@@ -31,8 +31,7 @@ window.onload = () => {
   Editor.setup();
 
   update();
-}
-
+};
 
 /**
  * Main update loop body.

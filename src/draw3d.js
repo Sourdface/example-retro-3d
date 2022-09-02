@@ -1,7 +1,6 @@
 // @ts-check
 
 import * as Debug from './debug.js';
-import * as Geom from './geom.js';
 import * as Color from './color.js';
 import * as Draw2D from './draw2d.js';
 
@@ -9,7 +8,7 @@ import * as Draw2D from './draw2d.js';
  * Describes a 3D visual element that can be drawn to the screen
  *
  * @exports Sprite3D
- * @typedef {Geom.Box3D & Omit<Draw2D.Sprite2D, 'layerId'>} Sprite3D
+ * @typedef {import('./geom.js').Box3D & Omit<Draw2D.Sprite2D, 'layerId'>} Sprite3D
  */
 
 /**
@@ -18,14 +17,14 @@ import * as Draw2D from './draw2d.js';
  */
 export const SPRITE_3D_POOL_SIZE = 4096;
 
-let _cellSizeZ = 4;
-
-let _gridSizeZ = 32;
-
 /**
- * @type {Geom.Vector3D}
+ * Offset of the view within the current scene.
+ *
+ * This value is subtracted from the position of all objects drawn to the canvas.
+ *
+ * @type {import('./geom.js').Vector3D}
  */
-const _tempVector3D = { x: 0, y: 0, z: 0 };
+export const viewOffset = { x: 0, y: 0, z: 8 };
 
 /**
  * Pool of pre-allocated `Sprite3D`'s
@@ -33,21 +32,18 @@ const _tempVector3D = { x: 0, y: 0, z: 0 };
  * @type {readonly Sprite3D[]}
  */
 const _sprite3DPool = Array.from(Array(SPRITE_3D_POOL_SIZE))
-  .map(() => /** @type {Sprite3D} */({ x: 0, y: 0, z: 0, w: 0, h: 0, d: 0, color: 0xFFFF, type: 0 }));
+  .map(() => /** @type {Sprite3D} */({
+    x: 0, y: 0, z: 0, w: 0, h: 0, d: 0, color: 0xFFFF, type: 0,
+  }));
+
+let _cellSizeZ = 4;
+
+let _gridSizeZ = 32;
 
 /**
  * Index of next `Sprite3D` from the pool to be queued
  */
 let _nextSprite3DIndex = 0;
-
-/**
- * Offset of the view within the current scene.
- *
- * This value is subtracted from the position of all objects drawn to the canvas.
- *
- * @type {Geom.Vector3D}
- */
-export const viewOffset = { x: 0, y: 0, z: 8 };
 
 /**
  * Field of view.
@@ -64,11 +60,13 @@ export let fov = 180 / Math.PI / 24;
  */
 export let fogPower = 0.044;
 
+// eslint-disable-next-line prefer-const
 export let fogOffset = 1.006;
 
 /**
  * Objects drawn to be at a z distance less than this from the camera will not be drawn.
  */
+// eslint-disable-next-line prefer-const
 export let zNear = 5;
 
 export function setup() {
@@ -76,7 +74,7 @@ export function setup() {
 }
 
 export function update() {
-  const fovR = fov * Math.PI / 180;
+  const fovR = fov * (Math.PI / 180);
 
   const gridCX = Draw2D.gridSize.x * 0.5;
   const gridCY = Draw2D.gridSize.y * 0.5;
@@ -134,7 +132,7 @@ export function update() {
 }
 
 /**
- * @param {Geom.Vector3D} size
+ * @param {import('./geom.js').Vector3D} size
  */
 export function getCellSize(size) {
   size.x = Draw2D.cellSize.x;
@@ -143,7 +141,7 @@ export function getCellSize(size) {
 }
 
 /**
- * @param {Geom.Vector3D} size
+ * @param {import('./geom.js').Vector3D} size
  */
 export function setCellSize(size) {
   Draw2D.cellSize.x = size.x;
@@ -152,7 +150,7 @@ export function setCellSize(size) {
 }
 
 /**
- * @param {Geom.Vector3D} size
+ * @param {import('./geom.js').Vector3D} size
  */
 export function getGridSize(size) {
   size.x = Draw2D.gridSize.x;
@@ -161,7 +159,7 @@ export function getGridSize(size) {
 }
 
 /**
- * @param {Geom.Vector3D} size
+ * @param {import('./geom.js').Vector3D} size
  */
 export function setGridSize(size) {
   Draw2D.gridSize.x = size.x;
@@ -189,7 +187,6 @@ export function queueSprite3D(spr3DSrc) {
     _nextSprite3DIndex = 0;
   }
 }
-
 
 Debug.onKeyDown(']', () => {
   Draw2D.cellSize.x += 1;
@@ -225,4 +222,4 @@ Debug.onKeyDown(';', () => {
 
 Debug.onKeyDown('\'', () => {
   fogPower += 0.01;
-})
+});

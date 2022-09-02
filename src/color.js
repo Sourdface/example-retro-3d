@@ -7,7 +7,8 @@
  */
 
 /**
- * Color represented as RGB components as a set of 3 individual floating-point numbers in the range 0.0 to 1.0
+ * Color represented as RGB components as a set of 3 individual floating-point
+ * numbers in the range 0.0 to 1.0
  *
  * @exports Floats
  * @typedef {[r: number, g: number, b: number]} Floats
@@ -35,7 +36,6 @@
  * @typedef {number} MPal
  */
 
-
 /**
  * Used internally for various operations
  *
@@ -62,9 +62,9 @@ export function mpalToFloats(mpal, floats) {
  */
 export function floatsToMpal([r, g, b]) {
   return (
-    (((r * 0b111) & 0b111) << 6) |
-    (((g * 0b111) & 0b111) << 3) |
-    (((b * 0b111) & 0b111) << 0)
+    (((r * 0b111) & 0b111) << 6)
+    | (((g * 0b111) & 0b111) << 3)
+    | (((b * 0b111) & 0b111) << 0)
   ) >>> 0;
 }
 
@@ -75,9 +75,9 @@ export function floatsToMpal([r, g, b]) {
  * @return {CssHex}
  */
 export function mpalToCssHex(mpal) {
-  const r = ((((mpal & 0b111_000_000) >> 6) * 0xFF / 0b111) | 0) << 16;
-  const g = ((((mpal & 0b000_111_000) >> 3) * 0xFF / 0b111) | 0) << 8;
-  const b = ((((mpal & 0b000_000_111) >> 0) * 0xFF / 0b111) | 0) << 0;
+  const r = ((((mpal & 0b111_000_000) >> 6) * (0xFF / 0b111)) | 0) << 16;
+  const g = ((((mpal & 0b000_111_000) >> 3) * (0xFF / 0b111)) | 0) << 8;
+  const b = ((((mpal & 0b000_000_111) >> 0) * (0xFF / 0b111)) | 0) << 0;
   return `#${((r | g | b) >>> 0).toString(16).toUpperCase().padStart(6, '0')}`;
 }
 

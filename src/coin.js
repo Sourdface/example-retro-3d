@@ -6,9 +6,9 @@
  * Provides the behavior of coins collectable by the player.
  */
 
-import * as Draw3D from "./draw3d.js";
-import * as Collision from "./collision.js";
-import * as Player from "./player.js";
+import * as Collision from './collision.js';
+import * as Draw3D from './draw3d.js';
+import * as Player from './player.js';
 
 /**
  * @typedef {Draw3D.Sprite3D & _Coin} Coin
@@ -41,6 +41,18 @@ export function setup() {
   }
 }
 
+export function update() {
+  for (let i = 0; i < coins.length; i++) {
+    if (coins[i].enabled) {
+      if (Collision.rectIntersectBox3D(Player.player, coins[i])) {
+        collect(i);
+      }
+
+      Draw3D.queueSprite3D(coins[i]);
+    }
+  }
+}
+
 /**
  * Set state of a preallocated coin
  * @param {number} i Index of coin
@@ -56,7 +68,8 @@ export function set(i, x, y, z) {
 }
 
 /**
- * Return the index of the first coin that is not enabled. Return -1 if all coins are enabled.
+ * Return the index of the first coin that is not enabled. Return -1 if all
+ * coins are enabled.
  */
 export function next() {
   for (let i = 0; i < coins.length; i++) {
@@ -65,18 +78,6 @@ export function next() {
     }
   }
   return -1;
-}
-
-export function update() {
-  for (let i = 0; i < coins.length; i++) {
-    if (coins[i].enabled) {
-      if (Collision.rectIntersectBox3D(Player.player, coins[i])) {
-        collect(i);
-      }
-
-      Draw3D.queueSprite3D(coins[i]);
-    }
-  }
 }
 
 /**

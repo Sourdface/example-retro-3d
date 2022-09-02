@@ -51,10 +51,10 @@ let _gamepad = null;
  * @type {{ [key: string]: keyof InputStates }}
  */
 export const keyInputs = {
-  'ArrowLeft': 'left',
-  'ArrowRight': 'right',
-  'ArrowUp': 'up',
-  'ArrowDown': 'down',
+  ArrowLeft: 'left',
+  ArrowRight: 'right',
+  ArrowUp: 'up',
+  ArrowDown: 'down',
   ' ': 'a',
 };
 
@@ -82,7 +82,7 @@ export const state = {
   down: { ..._DEFAULT_INPUT_STATE },
   a: { ..._DEFAULT_INPUT_STATE },
   b: { ..._DEFAULT_INPUT_STATE },
-}
+};
 
 /**
  * @param {KeyboardEvent} e
@@ -138,7 +138,7 @@ export function preUpdate() {
       continue;
     }
 
-    for (let btnId in gamepadButtonInputs) {
+    for (const btnId in gamepadButtonInputs) {
       if (!(btnId in gamepad.buttons)) {
         continue;
       }
@@ -153,6 +153,9 @@ export function preUpdate() {
  */
 export function update() {
   for (const key in state) {
+    if (!state[key]) {
+      continue;
+    }
     /** @type {InputState} */
     const input = state[key];
     input.justPressed = !input.pressedPrevious && input.pressed;

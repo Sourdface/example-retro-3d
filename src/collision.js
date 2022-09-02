@@ -6,8 +6,22 @@
  * Provides utilities for performing collision detection.
  */
 
-import * as Geom from './geom.js';
 import * as Draw3D from './draw3d.js';
+import * as Geom from './geom.js';
+import * as Util from './util.js';
+
+/** @type {Geom.Box2D} */
+const _intersectBox2DDefaultResultIntersection = {
+  x: 0, y: 0, h: 0, w: 0,
+};
+
+/** @type {Readonly<Geom.Box2D>[]} */
+const _intersectBox2DsDefaultResultIntersections = [];
+
+/** @type {Geom.Box3D} */
+const _intersectBox3DDefaultResultIntersection = {
+  x: 0, y: 0, h: 0, w: 0, z: 0, d: 0,
+};
 
 /**
  * @type {Geom.Vector3D}
@@ -21,10 +35,17 @@ const _tempVector3D = { x: 0, y: 0, z: 0 };
  * @param {Readonly<Geom.Box2D>} b2 Rectangle 2
  * @param {Readonly<Geom.Vector2D>} [o1] Optional offset for b1
  * @param {Readonly<Geom.Vector2D>} [o2] Optional offset for b2
- * @param {Geom.Box2D} [resultIntersection] Resulting intersection rectangle. Only valid if true is returned.
+ * @param {Geom.Box2D} [resultIntersection] Resulting intersection rectangle.
+ * Only valid if true is returned.
  * @returns {boolean}
  */
-export function rectIntersectBox2D(b1, b2, o1 = Geom.VECTOR_2D_0, o2 = Geom.VECTOR_2D_0, resultIntersection = _intersectBox2DDefaultResultIntersection) {
+export function rectIntersectBox2D(
+  b1,
+  b2,
+  o1 = Geom.VECTOR_2D_0,
+  o2 = Geom.VECTOR_2D_0,
+  resultIntersection = _intersectBox2DDefaultResultIntersection,
+) {
   Draw3D.getCellSize(_tempVector3D);
 
   const b1x1 = (b1.x + o1.x) * _tempVector3D.x;
@@ -54,27 +75,37 @@ export function rectIntersectBox2D(b1, b2, o1 = Geom.VECTOR_2D_0, o2 = Geom.VECT
   return true;
 }
 
-/** @type {Geom.Box2D} */
-const _intersectBox2DDefaultResultIntersection = { x: 0, y: 0, h: 0, w: 0 };
-
 /**
  * Find `Box2D`'s that intersect with a given `Box2D`, with optional offset
  *
  * @param {Readonly<Geom.Box2D>} b1 Rectangle to check for intersection with
  * @param {readonly Readonly<Geom.Box2D>[]} boxes Rectangles to check against
- * @param {Readonly<Geom.Box2D>[]} resultRects Contains resulting rectangles. Only valid if true is returned.
- * @param {Readonly<Geom.Box2D>[]} resultIntersections Contains resulting intersection rectangles. Only valid if true is returned.
+ * @param {Readonly<Geom.Box2D>[]} resultRects Contains resulting rectangles.
+ * Only valid if true is returned.
+ * @param {Readonly<Geom.Box2D>[]} resultIntersections Contains resulting
+ * intersection rectangles. Only valid if true is returned.
  * @param {Readonly<Geom.Vector2D>} [o1] Offset for b1
- * @param {(b1: Readonly<Geom.Box2D>, b2: Readonly<Geom.Box2D>, o1: Readonly<Geom.Vector2D>) => boolean} [filter] If provided, only consider rectangles that pass filter
+ * @param {(b1: Readonly<Geom.Box2D>, b2: Readonly<Geom.Box2D>, o1:
+ * Readonly<Geom.Vector2D>) => boolean} [filter] If provided, only consider
+ * rectangles that pass filter
  */
-export function rectIntersectBox2Ds(b1, boxes, resultRects, o1 = Geom.VECTOR_2D_0, resultIntersections = _intersectBox2DsDefaultResultIntersections, filter = _returnTrue) {
+export function rectIntersectBox2Ds(
+  b1,
+  boxes,
+  resultRects,
+  o1 = Geom.VECTOR_2D_0,
+  resultIntersections = _intersectBox2DsDefaultResultIntersections,
+  filter = Util.returnTrue,
+) {
   resultRects.length = 0;
   resultIntersections.length = 0;
   for (const b2 of boxes) {
     if (filter(b1, b2, o1)) {
       // TODO: Do not allocate new object; Use a pool of objects
       /** @type {Geom.Box2D} */
-      const intersection = { x: 0, y: 0, h: 0, w: 0 };
+      const intersection = {
+        x: 0, y: 0, h: 0, w: 0,
+      };
       if (rectIntersectBox2D(b1, b2, o1, undefined, intersection)) {
         resultRects.push(b2);
         resultIntersections.push(intersection);
@@ -83,9 +114,6 @@ export function rectIntersectBox2Ds(b1, boxes, resultRects, o1 = Geom.VECTOR_2D_
   }
 }
 
-/** @type {Readonly<Geom.Box2D>[]} */
-const _intersectBox2DsDefaultResultIntersections = [];
-
 /**
  * Return whether or not a vector is contained within a rectangle
  * @param {Readonly<Geom.Vector2D>} v
@@ -93,10 +121,10 @@ const _intersectBox2DsDefaultResultIntersections = [];
  */
 export function vectorIntersectBox2D(v, r) {
   return (
-    v.x >= r.x &&
-    v.x <= r.x + r.w &&
-    v.y >= r.y &&
-    v.y <= r.y + r.h
+    v.x >= r.x
+    && v.x <= r.x + r.w
+    && v.y >= r.y
+    && v.y <= r.y + r.h
   );
 }
 
@@ -104,10 +132,12 @@ export function vectorIntersectBox2D(v, r) {
  * Find rectangles that contain the given vector
  * @param {Readonly<Geom.Vector2D>} v Vector to check against
  * @param {readonly Readonly<Geom.Box2D>[]} boxes Rectangles to check against
- * @param {Readonly<Geom.Box2D>[]} resultBoxes Contains resulting rectangles. Only valid if true is returned.
- * @param {(v: Readonly<Geom.Vector2D>, b2: Readonly<Geom.Box2D>) => boolean} [filter] If provided, only consider rectangles that pass filter
+ * @param {Readonly<Geom.Box2D>[]} resultBoxes Contains resulting rectangles.
+ * Only valid if true is returned.
+ * @param {(v: Readonly<Geom.Vector2D>, b2: Readonly<Geom.Box2D>) => boolean}
+ * [filter] If provided, only consider rectangles that pass filter
  */
-export function vectorIntersectBox2Ds(v, boxes, resultBoxes, filter = _returnTrue) {
+export function vectorIntersectBox2Ds(v, boxes, resultBoxes, filter = Util.returnTrue) {
   resultBoxes.length = 0;
   for (const b2 of boxes) {
     if (filter(v, b2)) {
@@ -118,13 +148,6 @@ export function vectorIntersectBox2Ds(v, boxes, resultBoxes, filter = _returnTru
   }
 }
 
-function _returnTrue() {
-  return true;
-}
-
-/** @type {Geom.Box3D} */
-const _intersectBox3DDefaultResultIntersection = { x: 0, y: 0, h: 0, w: 0, z: 0, d: 0 };
-
 /**
  * Check for intersection between two rectangles, with optional offsets
  *
@@ -132,10 +155,17 @@ const _intersectBox3DDefaultResultIntersection = { x: 0, y: 0, h: 0, w: 0, z: 0,
  * @param {Readonly<Geom.Box3D>} b2 Rectangle 2
  * @param {Readonly<Geom.Vector3D>} [o1] Optional offset for b1
  * @param {Readonly<Geom.Vector3D>} [o2] Optional offset for b2
- * @param {Geom.Box3D} [resultIntersection] Resulting intersection rectangle. Only valid if true is returned.
+ * @param {Geom.Box3D} [resultIntersection] Resulting intersection rectangle.
+ * Only valid if true is returned.
  * @returns {boolean}
  */
-export function rectIntersectBox3D(b1, b2, o1 = Geom.VECTOR_3D_0, o2 = Geom.VECTOR_3D_0, resultIntersection = _intersectBox3DDefaultResultIntersection) {
+export function rectIntersectBox3D(
+  b1,
+  b2,
+  o1 = Geom.VECTOR_3D_0,
+  o2 = Geom.VECTOR_3D_0,
+  resultIntersection = _intersectBox3DDefaultResultIntersection,
+) {
   Draw3D.getCellSize(_tempVector3D);
 
   const b1x1 = (b1.x + o1.x) * _tempVector3D.x;
@@ -160,12 +190,12 @@ export function rectIntersectBox3D(b1, b2, o1 = Geom.VECTOR_3D_0, o2 = Geom.VECT
   const b2z2 = b2z1 + b2d;
 
   if (
-    b1x2 < b2x1 ||
-    b1x1 > b2x2 ||
-    b1y2 < b2y1 ||
-    b1y1 > b2y2 ||
-    b1z2 < b2z1 ||
-    b1z1 > b2z2
+    b1x2 < b2x1
+    || b1x1 > b2x2
+    || b1y2 < b2y1
+    || b1y1 > b2y2
+    || b1z2 < b2z1
+    || b1z1 > b2z2
   ) {
     return false;
   }
@@ -188,19 +218,32 @@ const _intersectBox3DsDefaultResultIntersections = [];
  *
  * @param {Readonly<Geom.Box3D>} b1 Rectangle to check for intersection with
  * @param {readonly Readonly<Geom.Box3D>[]} boxes Rectangles to check against
- * @param {Readonly<Geom.Box3D>[]} resultRects Contains resulting rectangles. Only valid if true is returned.
- * @param {Readonly<Geom.Box3D>[]} resultIntersections Contains resulting intersection rectangles. Only valid if true is returned.
+ * @param {Readonly<Geom.Box3D>[]} resultRects Contains resulting rectangles.
+ * Only valid if true is returned.
+ * @param {Readonly<Geom.Box3D>[]} resultIntersections Contains resulting
+ * intersection rectangles. Only valid if true is returned.
  * @param {Readonly<Geom.Vector3D>} [o1] Offset for b1
- * @param {(b1: Readonly<Geom.Box3D>, b2: Readonly<Geom.Box3D>, o1: Readonly<Geom.Vector3D>) => boolean} [filter] If provided, only consider rectangles that pass filter
+ * @param {(b1: Readonly<Geom.Box3D>, b2: Readonly<Geom.Box3D>, o1:
+ * Readonly<Geom.Vector3D>) => boolean} [filter] If provided, only consider
+ * rectangles that pass filter
  */
- export function rectIntersectBox3Ds(b1, boxes, resultRects, o1 = Geom.VECTOR_3D_0, resultIntersections = _intersectBox3DsDefaultResultIntersections, filter = _returnTrue) {
+export function rectIntersectBox3Ds(
+  b1,
+  boxes,
+  resultRects,
+  o1 = Geom.VECTOR_3D_0,
+  resultIntersections = _intersectBox3DsDefaultResultIntersections,
+  filter = Util.returnTrue,
+) {
   resultRects.length = 0;
   resultIntersections.length = 0;
   for (const b2 of boxes) {
     if (filter(b1, b2, o1)) {
       // TODO: Do not allocate new object; Use a pool of objects
       /** @type {Geom.Box3D} */
-      const intersection = { x: 0, y: 0, h: 0, w: 0, z: 0, d: 0 };
+      const intersection = {
+        x: 0, y: 0, h: 0, w: 0, z: 0, d: 0,
+      };
       if (rectIntersectBox3D(b1, b2, o1, undefined, intersection)) {
         resultRects.push(b2);
         resultIntersections.push(intersection);

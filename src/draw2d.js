@@ -1,23 +1,22 @@
 // @ts-check
 
 /**
- * @module draw
+ * @module draw2d
  *
- * Provides the ability to draw things to the screen.
+ * Provides the ability to draw things to the screen in 2D.
  *
- * All coordinates used within this module are interpreted as cell positions, except where stated otherwise. They will be converted to pixel positions when drawn.
+ * All coordinates used within this module are interpreted as cell positions,
+ * except where stated otherwise. They will be converted to pixel positions when
+ * drawn.
  */
 
-
-import * as Debug from './debug.js';
-import * as Geom from './geom.js';
 import * as Color from './color.js';
 
 /**
  * Describes a 2D visual element that can be drawn to the screen.
  *
  * @exports Sprite2D
- * @typedef {Geom.Box2D & _Sprite} Sprite2D
+ * @typedef {import('./geom.js').Box2D & _Sprite} Sprite2D
  * @typedef _Sprite
  * @prop {Color.MPal} color Color of the sprite
  * @prop {number} type Currently unused.
@@ -38,6 +37,43 @@ import * as Color from './color.js';
 export const SPRITE_2D_POOL_SIZE = 4096;
 
 /**
+ * @type {Sprite2D[]}
+ */
+const _sprite2DPoolSorted = [];
+
+/**
+ * Size in pixels of a single cell in the canvas.
+ *
+ * Partially determines the size of the canvas.
+ *
+ * @type {import('./geom.js').Vector2D}
+ */
+export const cellSize = { x: 4, y: 4 };
+
+/**
+ * Size of the canvas in cells.
+ *
+ * Partially determines the size of the canvas.
+ *
+ * @type {import('./geom.js').Vector2D}
+ */
+export const gridSize = { x: 32, y: 18 };
+
+/**
+ * Current mouse position in grid coordinates.
+ *
+ * TODO: Currently unused.
+ *
+ * @type {import('./geom.js').Vector2D}
+ */
+export const mousePos = { x: 0, y: 0 };
+
+/**
+ * Index of next `Sprite2D` index to be queued
+ */
+let _nextSprite2DIndex = 0;
+
+/**
  * Reference to the main canvas element.
  *
  * @type {HTMLCanvasElement}
@@ -52,60 +88,14 @@ export let canvas;
 export let ctx;
 
 /**
- * Size in pixels of a single cell in the canvas.
- *
- * Partially determines the size of the canvas.
- *
- * @type {Geom.Vector2D}
- */
-export const cellSize = { x: 4, y: 4 };
-
-/**
- * Size of the canvas in cells.
- *
- * Partially determines the size of the canvas.
- *
- * @type {Geom.Vector2D}
- */
-export const gridSize = { x: 32, y: 18 };
-
-/**
- * Current mouse position in grid coordinates.
- *
- * TODO: Currently unused.
- *
- * @type {Geom.Vector2D}
- */
-export const mousePos = { x: 0, y: 0 };
-
-/**
  * Pool of pre-allocated `Sprite2D`'s
  *
  * @type {readonly (_PoolSprite2D)[]}
  */
 const _sprite2DPool = Array.from(Array(SPRITE_2D_POOL_SIZE))
-  .map(() => /** @type {_PoolSprite2D} */({ x: 0, y: 0, w: 0, h: 0, color: 0xFFFF, type: 0, z: 0, _drawIndex: 0 }));
-
-/**
- * Index of next `Sprite2D` index to be queued
- */
-let _nextSprite2DIndex = 0;
-
-/**
- * Initialize the drawing subsystem
- */
-export function setup() {
-  canvas = /** @type {HTMLCanvasElement} */ (document.getElementById('canvas'));
-  ctx = /** @type {CanvasRenderingContext2D} */ (canvas.getContext('2d'));
-
-  window.addEventListener('click', _onWindowClick);
-  window.addEventListener('mouseup', _onWindowMouseUp);
-
-  canvas.addEventListener('mousedown', _onCanvasMouseDown);
-  canvas.addEventListener('mousemove', _onCanvasMouseMove);
-
-  update();
-}
+  .map(() => /** @type {_PoolSprite2D} */({
+    x: 0, y: 0, w: 0, h: 0, color: 0xFFFF, type: 0, z: 0, _drawIndex: 0,
+  }));
 
 /**
  * @param {MouseEvent} e
@@ -136,14 +126,21 @@ function _onCanvasMouseMove(e) {
 }
 
 /**
- * Performs all pending draw operations.
+ * @param {Sprite2D} a
+ * @param {Sprite2D} b
  */
-export function update() {
-  const canvasW = cellSize.x * gridSize.x;
-  const canvasH = cellSize.y * gridSize.y;
-
-  _canvasReset(canvasW, canvasH);
-  _sprites2DRender();
+function _sprite2DPoolSort(a, b) {
+  if (a.z !== b.z) {
+    return b.z - a.z;
+  }
+  // TODO: There is probably a better sorting rule than this
+  const aX = (a.x + a.w * 0.5) - gridSize.x * 0.5;
+  const aY = (a.y + a.h * 0.5) - gridSize.y * 0.5;
+  const bX = (b.x + b.w * 0.5) - gridSize.x * 0.5;
+  const bY = (b.y + b.h * 0.5) - gridSize.y * 0.5;
+  const aDist = (aX ** 2 + aY ** 2) ** 0.5;
+  const bDist = (bX ** 2 + bY ** 2) ** 0.5;
+  return aDist - bDist;
 }
 
 /**
@@ -173,34 +170,37 @@ function _sprites2DRender() {
       Math.round((spr2D.x) * cellSize.x),
       Math.round((spr2D.y) * cellSize.y),
       Math.round(spr2D.w * cellSize.x),
-      Math.round(spr2D.h * cellSize.y)
+      Math.round(spr2D.h * cellSize.y),
     );
     spr2D.w = 0;
   }
 }
 
 /**
- * @type {Sprite2D[]}
+ * Initialize the drawing subsystem
  */
-const _sprite2DPoolSorted = [];
+export function setup() {
+  canvas = /** @type {HTMLCanvasElement} */ (document.getElementById('canvas'));
+  ctx = /** @type {CanvasRenderingContext2D} */ (canvas.getContext('2d'));
+
+  window.addEventListener('click', _onWindowClick);
+  window.addEventListener('mouseup', _onWindowMouseUp);
+
+  canvas.addEventListener('mousedown', _onCanvasMouseDown);
+  canvas.addEventListener('mousemove', _onCanvasMouseMove);
+
+  update();
+}
 
 /**
- * @param {Sprite2D} a
- * @param {Sprite2D} b
+ * Performs all pending draw operations.
  */
-function _sprite2DPoolSort(a, b) {
-  if (a.z != b.z) {
-    return b.z - a.z;
-  } else {
-    // TODO: There is probably a better sorting rule than this
-    const aX = (a.x + a.w * .5) - gridSize.x * .5;
-    const aY = (a.y + a.h * .5) - gridSize.y * .5;
-    const bX = (b.x + b.w * .5) - gridSize.x * .5;
-    const bY = (b.y + b.h * .5) - gridSize.y * .5;
-    const aDist = (aX ** 2 + aY ** 2) ** .5;
-    const bDist = (bX ** 2 + bY ** 2) ** 0.5;
-    return aDist - bDist;
-  }
+export function update() {
+  const canvasW = cellSize.x * gridSize.x;
+  const canvasH = cellSize.y * gridSize.y;
+
+  _canvasReset(canvasW, canvasH);
+  _sprites2DRender();
 }
 
 /**
@@ -232,5 +232,5 @@ export function queueSprite2D(spr2DSrc) {
     _nextSprite2DIndex = 0;
   }
 
-  return spr2DDest
+  return spr2DDest;
 }
