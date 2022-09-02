@@ -95,3 +95,7 @@ There is no universal, central physics controller. Instead, any necessary physic
 - [ ] Maintain canvas aspect ratio for all window sizes
 - [ ] Find a use for coins
 - [ ] Add HUD to show coin count and health
+
+## License
+
+This software is released under the [MIT license](./LICENSE.md).
