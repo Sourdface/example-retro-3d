@@ -2,9 +2,13 @@
 
 3D retro platformer game demo in vanilla JavaScript.
 
+![Screenshot](./screenshot.png)
+
 ## How to Play
 
-This demo requires no build tools or local software other than common, modern web browsers. To run the demo, open `index.html` in a web browser. For best results, play in the browser's full-screen mode on a 16:9 screen.
+This demo requires no build tools or local software other than a common, modern web browsers. Chrome-based browsers are preferred, but other browsers should also work.
+
+To run the demo, download all files and open `index.html` in a web browser. For best results, play in the browser's full-screen mode on a 16:9 screen.
 
 > **NOTE:** See [Same Origin Policy](#same-origin-policy) for details about running the demo directly from the filesystem.
 
@@ -19,7 +23,7 @@ Keyboard and Xbox One controllers are both supported. (Other types of joysticks 
 
 #### Xbox One Controls
 
-- **Dpad**: Walk.
+- **D-Pad**: Walk.
 - **X**: Jump. Hold longer to jump higher.
 
 ### Objectives
@@ -33,8 +37,10 @@ The demo features a built-in level editor which can be activated by pressing num
 - `0`: Default mode. Left click is ignored.
 - `1`: Player edit mode. Left click to set the player's current location to the place you clicked.
 - `2`: Wall edit mode. Left click to begin drawing a wall, starting from the top-left corner. Drag down and/or right to expand the wall from the point clicked. Release to finalize the wall.
-- `3`: Coin edit mode. Lect click to place a coin.
+- `3`: Coin edit mode. Left click to place a coin.
 - Additionally, right clicking any element will delete it (other than the player).
+
+Currently, objects can only be placed on the front-most layer. (A method for 3D object placement has yet to be devised.)
 
 ## Same-Origin Policy
 
@@ -56,7 +62,7 @@ Additionally, closures are typically avoided whenever possible. For closure-like
 
 ## Rendering
 
-The rendering engine is based on a few core concepts:
+The rendering engine is based on a the pursuit of a unique aesthetic using a few core concepts:
 
 - **Only use basic 2D geometry functions for drawing, even for 3D objects.** (Primarily rectangles.)
 - **Use a coordinate system based on a unit that is meaningful to the physics engine: Grid cells.**
@@ -74,7 +80,8 @@ There is no universal, central physics controller. Instead, any necessary physic
 ## TODO
 
 - [ ] Add an NTSC filter effect
-- [ ] Add sound based on audio context
+- [ ] Add sound based on web audio contexts
+- [ ] Enhance the level editor to allow objects to be placed in 3D
 - [ ] Add support for saving levels to local filesystem
 - [ ] Add support for loading levels from the filesystem
 - [ ] Enemies, health, and attacks
