@@ -6,9 +6,11 @@
 
 ## How to Play
 
-This demo requires no build tools or local software other than a common, modern web browser. Chrome-based browsers are preferred, but other browsers should also work.
+[Play Now](https://bradharms.github.io/inthepipes-game)
 
-To run the demo, download all files and open `index.html` in a web browser. For best results, play in the browser's full-screen mode on a 16:9 screen.
+This app requires no build tools or local software other than a common, modern web browser. Chrome-based browsers are preferred, but other browsers should also work.
+
+To run the app from your own system, download or clone all files and open `index.html` in a web browser. For best results, play in the browser's full-screen mode on a 16:9 screen.
 
 > **NOTE:** See [Same Origin Policy](#same-origin-policy) for details about running the demo directly from the filesystem.
 
