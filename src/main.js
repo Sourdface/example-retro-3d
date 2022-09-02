@@ -1,33 +1,34 @@
 // @ts-check
 
-import * as coin from './coin.js';
-import * as input from './input.js';
-import * as draw from './draw.js';
-import * as player from './player.js';
-import * as wall from './wall.js';
-import * as level from './level.js';
-import * as editor from './editor.js';
+import * as Coin from './coin.js';
+import * as Input from './input.js';
+import * as Draw3D from './draw3d.js';
+import * as Draw2D from './draw2d.js';
+import * as Player from './player.js';
+import * as Wall from './wall.js';
+import * as Level from './level.js';
+import * as Editor from './editor.js';
 
 window.onload = () => {
-  draw.setup();
-  input.setup();
-  wall.setup();
-  player.setup();
-  coin.setup();
-
-  level.setup();
-
-  editor.setup();
+  Draw2D.setup();
+  Draw3D.setup();
+  Input.setup();
+  Wall.setup();
+  Player.setup();
+  Coin.setup();
+  Level.setup();
+  Editor.setup();
 
   update();
 }
 
 function update() {
-  wall.update();
-  player.update();
-  coin.update();
-  input.update();
-  draw.update();
+  Wall.update();
+  Player.update();
+  Coin.update();
+  Input.update();
+  Draw3D.update();
+  Draw2D.update();
 
   window.requestAnimationFrame(update);
 }

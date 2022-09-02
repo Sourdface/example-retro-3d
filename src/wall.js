@@ -1,9 +1,9 @@
 // @ts-check
 
-import * as draw from './draw.js';
+import * as Draw3D from './draw3d.js';
 
 /**
- * @typedef {draw.Sprite3D & _Wall} Wall
+ * @typedef {Draw3D.Sprite3D & _Wall} Wall
  * @typedef _Wall
  * @prop {boolean} solid
  * @prop {boolean} visible
@@ -69,7 +69,7 @@ export function next() {
 export function update() {
   for (let i = 0; i < walls.length; i++) {
     if (walls[i].visible) {
-      draw.queueSprite3D(walls[i]);
+      Draw3D.queueSprite3D(walls[i]);
     }
   }
 }

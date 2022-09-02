@@ -6,12 +6,12 @@
  * Provides the behavior of coins collectable by the player.
  */
 
-import * as draw from "./draw.js";
-import * as collision from "./collision.js";
-import * as player from "./player.js";
+import * as Draw3D from "./draw3d.js";
+import * as Collision from "./collision.js";
+import * as Player from "./player.js";
 
 /**
- * @typedef {draw.Sprite3D & _Coin} Coin
+ * @typedef {Draw3D.Sprite3D & _Coin} Coin
  * @typedef _Coin
  * @prop {boolean} enabled
  *
@@ -70,11 +70,11 @@ export function next() {
 export function update() {
   for (let i = 0; i < coins.length; i++) {
     if (coins[i].enabled) {
-      if (collision.rectIntersectBox3D(player.player, coins[i])) {
+      if (Collision.rectIntersectBox3D(Player.player, coins[i])) {
         collect(i);
       }
 
-      draw.queueSprite3D(coins[i]);
+      Draw3D.queueSprite3D(coins[i]);
     }
   }
 }

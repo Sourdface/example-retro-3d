@@ -1,13 +1,13 @@
 // @ts-check
 
-import * as draw from "./draw.js";
-import * as input from "./input.js";
-import * as geom from "./geom.js";
-import * as collision from "./collision.js";
-import * as wall from "./wall.js";
+import * as Draw3D from "./draw3d.js";
+import * as Input from "./input.js";
+import * as Geom from "./geom.js";
+import * as Collision from "./collision.js";
+import * as Wall from "./wall.js";
 
 /**
- * @typedef {draw.Sprite3D & _Player} Player
+ * @typedef {Draw3D.Sprite3D & _Player} Player
  * @typedef _Player
  * @prop {number} ay - Acceleration in the y direction.
  * @prop {number} jumpPower - Power of the jump.
@@ -18,6 +18,11 @@ import * as wall from "./wall.js";
  *
  * @exports Player
  */
+
+/**
+ * @type {Geom.Vector3D}
+ */
+const _tempVector3D = { x: 0, y: 0, z: 0 };
 
 /**
  * @type {Player}
@@ -47,14 +52,14 @@ let _isOnFloor = false;
 /**
  * List of walls that are colliding with the player.
  *
- * @type {Readonly<wall.Wall>[]}
+ * @type {Readonly<Wall.Wall>[]}
  */
 const _wallsColliding = [];
 
 /**
  * List of of the intersections of the player with walls.
  *
- * @type {geom.Box3D[]}
+ * @type {Geom.Box3D[]}
  */
 const _wallIntersections = [];
 
@@ -75,31 +80,33 @@ export function set(x, y) {
 export function update() {
   _updateInput();
   _updatePhysics();
-  draw.queueSprite3D(player);
+  Draw3D.queueSprite3D(player);
 }
 
 function _updateInput() {
-  if (input.state.left.pressed && !input.state.right.pressed) {
+  Draw3D.getCellSize(_tempVector3D);
+
+  if (Input.state.left.pressed && !Input.state.right.pressed) {
     player.x -= player.walkSpeed;
-  } else if (input.state.right.pressed && !input.state.left.pressed) {
+  } else if (Input.state.right.pressed && !Input.state.left.pressed) {
     player.x += player.walkSpeed;
   } else {
-    player.x = (Math.round(player.x * draw.cellSize.x)) / draw.cellSize.x;
+    player.x = (Math.round(player.x * _tempVector3D.x)) / _tempVector3D.x;
   }
 
-  if (input.state.down.pressed && !input.state.up.pressed) {
+  if (Input.state.down.pressed && !Input.state.up.pressed) {
     player.z -= player.walkSpeed;
-  } else if (input.state.up.pressed && !input.state.down.pressed) {
+  } else if (Input.state.up.pressed && !Input.state.down.pressed) {
     player.z += player.walkSpeed;
   } else {
-    player.z = (Math.round(player.z * draw.cellSize.z)) / draw.cellSize.z;
+    player.z = (Math.round(player.z * _tempVector3D.z)) / _tempVector3D.z;
   }
 
   if (_isOnFloor) {
-    if (input.state.a.justPressed) {
+    if (Input.state.a.justPressed) {
       player.vy = -player.jumpPower;
     }
-  } else if (input.state.a.justReleased && player.vy < player.vyAirbrake) {
+  } else if (Input.state.a.justReleased && player.vy < player.vyAirbrake) {
     player.vy = player.vyAirbrake;
   }
   _isOnFloor = false;
@@ -126,7 +133,7 @@ function _updatePhysics() {
   player.vy = Math.min(player.vy + player.ay, player.vyMax);
   player.y += player.vy;
 
-  collision.rectIntersectBox3Ds(player, wall.walls, _wallsColliding, undefined, _wallIntersections, _updateWallCollisionsFilter);
+  Collision.rectIntersectBox3Ds(player, Wall.walls, _wallsColliding, undefined, _wallIntersections, _updateWallCollisionsFilter);
   for (let i = 0; i < _wallsColliding.length; i++) {
     const colWall = _wallsColliding[i];
     const colIntersection = _wallIntersections[i];
@@ -172,10 +179,10 @@ function _updatePhysics() {
 
 
 /**
- * @param {Readonly<geom.Box3D>} r1
- * @param {Readonly<geom.Box3D>} r2
- * @param {Readonly<geom.Vector3D>} o1
+ * @param {Readonly<Geom.Box3D>} r1
+ * @param {Readonly<Geom.Box3D>} r2
+ * @param {Readonly<Geom.Vector3D>} o1
  */
 function _updateWallCollisionsFilter(r1, r2, o1) {
-  return /** @type {wall.Wall} */ (r2).solid;
+  return /** @type {Wall.Wall} */ (r2).solid;
 }

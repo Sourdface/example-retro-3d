@@ -1,16 +1,17 @@
 // @ts-check
 
-import * as draw from './draw.js';
-import * as geom from './geom.js';
-import * as collision from './collision.js';
-import * as player from './player.js';
-import * as wall from './wall.js';
-import * as coin from './coin.js';
+import * as Draw2D from './draw2d.js';
+import * as Draw3D from './draw3d.js';
+import * as Geom from './geom.js';
+import * as Collision from './collision.js';
+import * as Player from './player.js';
+import * as Wall from './wall.js';
+import * as Coin from './coin.js';
 
 let _mode = 0;
 
 /**
- * @type {geom.Vector2D}
+ * @type {Geom.Vector2D}
  */
 let _mouseDownPos = { x: 0, y: 0 };
 
@@ -24,7 +25,7 @@ export function setup() {
   window.addEventListener('mousemove', _onMouseMove);
   window.addEventListener('keydown', _onKeyDown);
 
-  draw.canvas.addEventListener('contextmenu', e => e.preventDefault());
+  Draw2D.canvas.addEventListener('contextmenu', e => e.preventDefault());
 }
 
 /**
@@ -33,46 +34,46 @@ export function setup() {
 function _onMouseDown(e) {
   e.preventDefault();
 
-  const canvasBox = draw.canvas.getBoundingClientRect();
-  _mouseDownPos.x = (Math.max((e.offsetX / canvasBox.width * draw.gridSize.x) + draw.viewOffset.x, draw.viewOffset.x)) | 0;
-  _mouseDownPos.y = (Math.max((e.offsetY / canvasBox.height * draw.gridSize.y) + draw.viewOffset.y, draw.viewOffset.y)) | 0;
+  const canvasBox = Draw2D.canvas.getBoundingClientRect();
+  _mouseDownPos.x = (Math.max((e.offsetX / canvasBox.width * Draw2D.gridSize.x) + Draw3D.viewOffset.x, Draw3D.viewOffset.x)) | 0;
+  _mouseDownPos.y = (Math.max((e.offsetY / canvasBox.height * Draw2D.gridSize.y) + Draw3D.viewOffset.y, Draw3D.viewOffset.y)) | 0;
 
   button: switch (e.button) {
     case 0:
       _mouseDown = true;
       mode: switch (_mode) {
         case 1:
-          player.set(_mouseDownPos.x, _mouseDownPos.y);
+          Player.set(_mouseDownPos.x, _mouseDownPos.y);
           break mode;
 
         case 2:
-          _objectIndex = wall.next();
+          _objectIndex = Wall.next();
           if (_objectIndex < 0) {
             break mode;
           }
-          wall.set(_objectIndex, _mouseDownPos.x, _mouseDownPos.y, 0, 1, 1, 3, true, true);
+          Wall.set(_objectIndex, _mouseDownPos.x, _mouseDownPos.y, 0, 1, 1, 3, true, true);
           break mode;
 
         case 3:
-          _objectIndex = coin.next();
+          _objectIndex = Coin.next();
           if (_objectIndex < 0) {
             break mode;
           }
-          coin.set(_objectIndex, _mouseDownPos.x, _mouseDownPos.y, 0);
+          Coin.set(_objectIndex, _mouseDownPos.x, _mouseDownPos.y, 0);
           break mode;
       }
       break button;
 
     case 2:
-      collision.vectorIntersectBox2Ds(_mouseDownPos, wall.walls, _onMouseDownDeleteRects);
+      Collision.vectorIntersectBox2Ds(_mouseDownPos, Wall.walls, _onMouseDownDeleteRects);
       for (let i = 0; i < _onMouseDownDeleteRects.length; i++) {
-        const wall = /** @type {wall.Wall} */ (_onMouseDownDeleteRects[i]);
+        const wall = /** @type {Wall.Wall} */ (_onMouseDownDeleteRects[i]);
         wall.solid = false;
         wall.visible = false;
       }
-      collision.vectorIntersectBox2Ds(_mouseDownPos, coin.coins, _onMouseDownDeleteRects);
+      Collision.vectorIntersectBox2Ds(_mouseDownPos, Coin.coins, _onMouseDownDeleteRects);
       for (let i = 0; i < _onMouseDownDeleteRects.length; i++) {
-        const coin = /** @type {coin.Coin} */ (_onMouseDownDeleteRects[i]);
+        const coin = /** @type {Coin.Coin} */ (_onMouseDownDeleteRects[i]);
         coin.enabled = false;
       }
       break button;
@@ -80,7 +81,7 @@ function _onMouseDown(e) {
 }
 
 /**
- * @type {geom.Box3D[]}
+ * @type {Geom.Box3D[]}
  */
 const _onMouseDownDeleteRects = [];
 
@@ -99,29 +100,29 @@ function _onMouseMove(e) {
     return;
   }
 
-  const canvasBox = draw.canvas.getBoundingClientRect();
-  const mouseX = (Math.max((e.offsetX / canvasBox.width * draw.gridSize.x) + draw.viewOffset.x, draw.viewOffset.x)) | 0;
-  const mouseY = (Math.max((e.offsetY / canvasBox.height * draw.gridSize.y) + draw.viewOffset.y, draw.viewOffset.y)) | 0;
+  const canvasBox = Draw2D.canvas.getBoundingClientRect();
+  const mouseX = (Math.max((e.offsetX / canvasBox.width * Draw2D.gridSize.x) + Draw3D.viewOffset.x, Draw3D.viewOffset.x)) | 0;
+  const mouseY = (Math.max((e.offsetY / canvasBox.height * Draw2D.gridSize.y) + Draw3D.viewOffset.y, Draw3D.viewOffset.y)) | 0;
 
   mode: switch (_mode) {
     case 1:
-      player.set(mouseX, mouseY);
+      Player.set(mouseX, mouseY);
       break mode;
 
     case 2:
       if (_objectIndex < 0) {
         break mode;
       }
-      wall.walls[_objectIndex].w = Math.max(mouseX - _mouseDownPos.x, 1);
-      wall.walls[_objectIndex].h = Math.max(mouseY - _mouseDownPos.y, 1);
+      Wall.walls[_objectIndex].w = Math.max(mouseX - _mouseDownPos.x, 1);
+      Wall.walls[_objectIndex].h = Math.max(mouseY - _mouseDownPos.y, 1);
       break mode;
 
     case 3:
       if (_objectIndex < 0) {
         break mode;
       }
-      coin.coins[_objectIndex].x = mouseX;
-      coin.coins[_objectIndex].y = mouseY;
+      Coin.coins[_objectIndex].x = mouseX;
+      Coin.coins[_objectIndex].y = mouseY;
       break mode;
   }
 }
