@@ -5,7 +5,7 @@
  *
  * Entry point for the app containing the main update loop.
  *
- * Most work is offloaded to other modules. This file mainly serves to
+ * Most work is offloaded to other modules.
  */
 
 import * as Coin from './coin.js';
