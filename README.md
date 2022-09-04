@@ -2,11 +2,30 @@
 
 3D retro platformer game demo in vanilla JavaScript.
 
-![Screenshot](./screenshot.png)
-
 [Play Now](https://bradharms.github.io/inthepipes-game)
 
+![Screenshot](./screenshot.png)
+
 > **NOTE:** For best results, play in full-screen mode on a 16:9 wide-screen screen display.
+
+## Page Contents
+
+1. [In the Pipes](#in-the-pipes)
+   1. [Page Contents](#page-contents)
+   2. [How to Play](#how-to-play)
+      1. [Controls](#controls)
+         1. [Keyboard Controls](#keyboard-controls)
+         2. [Xbox One Controls](#xbox-one-controls)
+      2. [Objectives](#objectives)
+   3. [Editor](#editor)
+   4. [Same-Origin Policy](#same-origin-policy)
+   5. [Software Architecture Style](#software-architecture-style)
+   6. [Memory Management](#memory-management)
+   7. [Rendering](#rendering)
+      1. [NTSC Filter Effect](#ntsc-filter-effect)
+   8. [Physics](#physics)
+   9. [TODO](#todo)
+   10. [License](#license)
 
 ## How to Play
 
