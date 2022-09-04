@@ -29,7 +29,7 @@ let _objectIndex = 0;
 function _onMouseDown(e) {
   e.preventDefault();
 
-  const canvasBox = Draw2D.canvas.getBoundingClientRect();
+  const canvasBox = Draw2D.canvasScreen.getBoundingClientRect();
 
   _mouseDownPos.x = (
     Math.max(((e.offsetX / canvasBox.width) * Draw2D.gridSize.x)
@@ -104,7 +104,7 @@ function _onMouseMove(e) {
     return;
   }
 
-  const canvasBox = Draw2D.canvas.getBoundingClientRect();
+  const canvasBox = Draw2D.canvasScreen.getBoundingClientRect();
 
   const mouseX = (
     Math.max(((e.offsetX / canvasBox.width) * Draw2D.gridSize.x)
@@ -178,7 +178,7 @@ export function setup() {
   window.addEventListener('mousemove', _onMouseMove);
   window.addEventListener('keydown', _onKeyDown);
 
-  Draw2D.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+  Draw2D.canvasScreen.addEventListener('contextmenu', (e) => e.preventDefault());
 }
 
 export function update() {

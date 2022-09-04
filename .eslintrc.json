@@ -31,6 +31,17 @@
         ],
         "no-bitwise": "off",
         "no-continue": "off",
-        "import/prefer-default-export": "warn"
+        "import/prefer-default-export": "warn",
+        "prefer-const": "warn",
+        "no-lonely-if": "warn",
+        "no-empty": "warn",
+        "no-trailing-spaces": "warn",
+        "padded-blocks": "warn",
+        "function-paren-newline": "warn",
+        "function-call-argument-newline": "warn",
+        "comma-spacing": "warn",
+        "no-mixed-operators": "off",
+        "space-infix-ops": "warn",
+        "no-floating-decimal": "warn"
     }
 }

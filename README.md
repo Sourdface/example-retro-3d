@@ -73,6 +73,10 @@ The rendering engine is based on a the pursuit of a unique aesthetic using a few
 - **Use the lowest resolution possible.** Canvas resolution based on the number of pixels in a cell, not the other way around.**
 - **Represent colors in the lowest bit depth possible.** Currently, color is represented using 9-bit color (3 bits per color channel) for every object drawn to the screen, and no alpha transparency is used. Lighting effects are achieved by choosing a different color for a rectangle out of the possible 9-bit color palette based on distance from the camera and the object's "base" color.
 
+### NTSC Filter Effect
+
+There is support for an RGB filter effect in the rendering engine, but it is disabled by default because initializing it causes tremendous lag and it doesn't look great anyway. To enable it, set `filterEnabled` to `true` inside of `src/draw2d.js`. In the future this effect may be improved, or else removed entirely.
+
 ## Physics
 
 The physics engine is based on AABB cubes and cubic intersection math. The collision resolution algorithm uses techniques that assume that all objects have axis-aligned bounding boxes.
@@ -83,7 +87,6 @@ There is no universal, central physics controller. Instead, any necessary physic
 
 ## TODO
 
-- [ ] Add an NTSC filter effect
 - [ ] Add sound based on web audio contexts
 - [ ] Enhance the level editor to allow objects to be placed in 3D
 - [ ] Add support for saving levels to local filesystem
