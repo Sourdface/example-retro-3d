@@ -88,28 +88,28 @@ let _ctxFilterMask;
  *
  * @type {HTMLCanvasElement}
  */
-export let canvasBuffer;
+let _canvasBuffer;
 
 /**
  * Reference to the context for the buffer canvas.
  *
  * @type {CanvasRenderingContext2D}
  */
-export let ctxBuffer;
+let _ctxBuffer;
 
 /**
  * Reference to the screen canvas element.
  *
  * @type {HTMLCanvasElement}
  */
-export let canvasScreen;
+let _canvasScreen;
 
 /**
  * Reference to the screen canvas context.
  *
  * @type {CanvasRenderingContext2D}
  */
-export let ctxScreen;
+let _ctxScreen;
 
 /**
  * Whether or not to use the filter effect
@@ -188,78 +188,16 @@ function _sprite2DPoolSort(a, b) {
   return aDist - bDist;
 }
 
-function _canvasReset() {
-  /** @type {number} */
-  const bufferW = cellSize.x * gridSize.x;
-  /** @type {number} */
-  const bufferH = cellSize.y * gridSize.y;
+/**
+ * @param {number} bufferW
+ * @param {number} bufferH
+ */
+function _canvasReset(bufferW, bufferH) {
+  _canvasScreen.width = bufferW;
+  _canvasScreen.height = bufferH;
 
-  /** @type {number} */
-  let canvasW;
-  /** @type {number} */
-  let canvasH;
-  if (filterEnabled) {
-    canvasBuffer.width = bufferW;
-    canvasBuffer.height = bufferH;
-    ctxBuffer.fillStyle = '#000000FF';
-    ctxBuffer.fillRect(0, 0, canvasBuffer.width, canvasBuffer.height);
-
-    canvasW = bufferW * filterRes;
-    canvasH = bufferH * filterRes;
-    if (_canvasFilterMask.width !== canvasW || _canvasFilterMask.height !== canvasH) {
-      _canvasFilterMask.width = canvasW;
-      _canvasFilterMask.height = canvasH;
-      _ctxFilterMask.fillStyle = '#000000FF';
-      _ctxFilterMask.fillRect(0, 0, canvasW, canvasH);
-
-      const dotSize = filterRes / 2 * filterScale;
-
-      const xG = Math.cos(Math.PI * 1 / 2) * dotSize;
-      const yG = Math.sin(Math.PI * 1 / 2) * dotSize;
-
-      const xR = Math.cos(Math.PI * 1 / 2 + Math.PI * 2 / 3) * dotSize;
-      const yR = Math.sin(Math.PI * 1 / 2 + Math.PI * 2 / 3) * dotSize;
-
-      const xB = Math.cos(Math.PI * 1 / 2 + Math.PI * 4 / 3) * dotSize;
-      const yB = Math.sin(Math.PI * 1 / 2 + Math.PI * 4 / 3) * dotSize;
-
-      const r = dotSize * 0.7;
-
-      const t = Math.PI * 2;
-
-      for (let row = 0; row < canvasH / filterScale; row++) {
-        for (let col = 0; col < canvasW / filterScale; col++) {
-          const x = ((col + 1 / 2) * dotSize * 8 / 3);
-          const y = ((row + 1 / 2) * dotSize * 3) + (col & 1 ? 0 : dotSize * 1 / 2);
-          const yS = col & 1 ? 1 : -1;
-
-          _ctxFilterMask.fillStyle = '#FF0000FF';
-          _ctxFilterMask.beginPath();
-          _ctxFilterMask.arc(x + xR, y + yR * yS, r, 0, t);
-          _ctxFilterMask.fill();
-
-          _ctxFilterMask.fillStyle = '#00FF00FF';
-          _ctxFilterMask.beginPath();
-          _ctxFilterMask.arc(x + xG, y + yG * yS, r, 0, t);
-          _ctxFilterMask.fill();
-
-          _ctxFilterMask.fillStyle = '#0000FFFF';
-          _ctxFilterMask.beginPath();
-          _ctxFilterMask.arc(x + xB, y + yB * yS, r, 0, t);
-          _ctxFilterMask.fill();
-        }
-      }
-    }
-  } else {
-    canvasW = bufferW;
-    canvasH = bufferH;
-  }
-
-  canvasScreen.width = canvasW;
-  canvasScreen.height = canvasH;
-
-  ctxScreen.fillStyle = '#000000FF';
-  ctxScreen.fillRect(0, 0, canvasScreen.width, canvasScreen.height);
+  _ctxScreen.fillStyle = '#000000FF';
+  _ctxScreen.fillRect(0, 0, _canvasScreen.width, _canvasScreen.height);
 }
 
 function _sprites2DRender() {
@@ -267,7 +205,7 @@ function _sprites2DRender() {
   Object.assign(_sprite2DPoolSorted, _sprite2DPool);
   _sprite2DPoolSorted.sort(_sprite2DPoolSort);
 
-  const ctx = filterEnabled ? ctxBuffer : ctxScreen;
+  const ctx = getCtx();
 
   for (const spr2D of _sprite2DPoolSorted) {
     if (!spr2D || !spr2D.w || !spr2D.h) {
@@ -282,31 +220,111 @@ function _sprites2DRender() {
     );
     spr2D.w = 0;
   }
+}
 
-  if (filterEnabled) {
-    ctxScreen.globalAlpha = 1.0;
-    ctxScreen.globalCompositeOperation = 'copy';
-    ctxScreen.drawImage(_canvasFilterMask, 0, 0);
-    ctxScreen.globalCompositeOperation = 'multiply';
-    ctxScreen.imageSmoothingEnabled = false;
-    ctxBuffer.imageSmoothingEnabled = false;
-    ctxScreen.drawImage(canvasBuffer, 0, 0, canvasBuffer.width, canvasBuffer.height, 0, 0, canvasScreen.width, canvasScreen.height);
-    ctxScreen.globalAlpha = 0.5;
-    ctxScreen.globalCompositeOperation = 'lighten';
-    ctxScreen.imageSmoothingEnabled = true;
-    ctxScreen.imageSmoothingQuality = 'low';
-    ctxScreen.drawImage(canvasBuffer, 0, 0, canvasBuffer.width, canvasBuffer.height, 0, 0, canvasScreen.width, canvasScreen.height);
+/**
+ * @param {number} bufferW
+ * @param {number} bufferH
+ */
+function _filterApply(bufferW, bufferH) {
+  if (!filterEnabled) {
+    return;
   }
+
+  _canvasBuffer.width = bufferW;
+  _canvasBuffer.height = bufferH;
+  _ctxBuffer.fillStyle = '#000000FF';
+  _ctxBuffer.fillRect(0, 0, _canvasBuffer.width, _canvasBuffer.height);
+
+  const canvasW = bufferW * filterRes;
+  const canvasH = bufferH * filterRes;
+  if (_canvasFilterMask.width !== canvasW || _canvasFilterMask.height !== canvasH) {
+    _canvasFilterMask.width = canvasW;
+    _canvasFilterMask.height = canvasH;
+    _ctxFilterMask.fillStyle = '#000000FF';
+    _ctxFilterMask.fillRect(0, 0, canvasW, canvasH);
+
+    const dotSize = filterRes / 2 * filterScale;
+
+    const xG = Math.cos(Math.PI * 1 / 2) * dotSize;
+    const yG = Math.sin(Math.PI * 1 / 2) * dotSize;
+
+    const xR = Math.cos(Math.PI * 1 / 2 + Math.PI * 2 / 3) * dotSize;
+    const yR = Math.sin(Math.PI * 1 / 2 + Math.PI * 2 / 3) * dotSize;
+
+    const xB = Math.cos(Math.PI * 1 / 2 + Math.PI * 4 / 3) * dotSize;
+    const yB = Math.sin(Math.PI * 1 / 2 + Math.PI * 4 / 3) * dotSize;
+
+    const r = dotSize * 0.7;
+
+    const t = Math.PI * 2;
+
+    for (let row = 0; row < canvasH / filterScale; row++) {
+      for (let col = 0; col < canvasW / filterScale; col++) {
+        const x = ((col + 1 / 2) * dotSize * 8 / 3);
+        const y = ((row + 1 / 2) * dotSize * 3) + (col & 1 ? 0 : dotSize * 1 / 2);
+        const yS = col & 1 ? 1 : -1;
+
+        _ctxFilterMask.fillStyle = '#FF0000FF';
+        _ctxFilterMask.beginPath();
+        _ctxFilterMask.arc(x + xR, y + yR * yS, r, 0, t);
+        _ctxFilterMask.fill();
+
+        _ctxFilterMask.fillStyle = '#00FF00FF';
+        _ctxFilterMask.beginPath();
+        _ctxFilterMask.arc(x + xG, y + yG * yS, r, 0, t);
+        _ctxFilterMask.fill();
+
+        _ctxFilterMask.fillStyle = '#0000FFFF';
+        _ctxFilterMask.beginPath();
+        _ctxFilterMask.arc(x + xB, y + yB * yS, r, 0, t);
+        _ctxFilterMask.fill();
+      }
+    }
+  }
+
+  _ctxScreen.globalAlpha = 1.0;
+  _ctxScreen.globalCompositeOperation = 'copy';
+  _ctxScreen.drawImage(_canvasFilterMask, 0, 0);
+  _ctxScreen.globalCompositeOperation = 'multiply';
+  _ctxScreen.imageSmoothingEnabled = false;
+  _ctxBuffer.imageSmoothingEnabled = false;
+  _ctxScreen.drawImage(
+    _canvasBuffer,
+    0,
+    0,
+    _canvasBuffer.width,
+    _canvasBuffer.height,
+    0,
+    0,
+    _canvasScreen.width,
+    _canvasScreen.height,
+  );
+  _ctxScreen.globalAlpha = 0.5;
+  _ctxScreen.globalCompositeOperation = 'lighten';
+  _ctxScreen.imageSmoothingEnabled = true;
+  _ctxScreen.imageSmoothingQuality = 'low';
+  _ctxScreen.drawImage(
+    _canvasBuffer,
+    0,
+    0,
+    _canvasBuffer.width,
+    _canvasBuffer.height,
+    0,
+    0,
+    _canvasScreen.width,
+    _canvasScreen.height,
+  );
 }
 
 /**
  * Initialize the drawing subsystem
  */
 export function setup() {
-  canvasBuffer = document.createElement('canvas');
-  ctxBuffer = /** @type {CanvasRenderingContext2D} */ (canvasBuffer.getContext('2d'));
-  canvasScreen = /** @type {HTMLCanvasElement} */ (document.getElementById('canvas'));
-  ctxScreen = /** @type {CanvasRenderingContext2D} */ (canvasScreen.getContext('2d'));
+  _canvasBuffer = document.createElement('canvas');
+  _ctxBuffer = /** @type {CanvasRenderingContext2D} */ (_canvasBuffer.getContext('2d'));
+  _canvasScreen = /** @type {HTMLCanvasElement} */ (document.getElementById('canvas'));
+  _ctxScreen = /** @type {CanvasRenderingContext2D} */ (_canvasScreen.getContext('2d'));
 
   _canvasFilterMask = document.createElement('canvas');
   _ctxFilterMask = /** @type {CanvasRenderingContext2D} */ (_canvasFilterMask.getContext('2d'));
@@ -314,8 +332,8 @@ export function setup() {
   window.addEventListener('click', _onWindowClick);
   window.addEventListener('mouseup', _onWindowMouseUp);
 
-  canvasScreen.addEventListener('mousedown', _onCanvasMouseDown);
-  canvasScreen.addEventListener('mousemove', _onCanvasMouseMove);
+  _canvasScreen.addEventListener('mousedown', _onCanvasMouseDown);
+  _canvasScreen.addEventListener('mousemove', _onCanvasMouseMove);
 
   update();
 }
@@ -324,8 +342,28 @@ export function setup() {
  * Performs all pending draw operations.
  */
 export function update() {
-  _canvasReset();
+  /** @type {number} */
+  const bufferW = cellSize.x * gridSize.x;
+  /** @type {number} */
+  const bufferH = cellSize.y * gridSize.y;
+
+  _canvasReset(bufferW, bufferH);
   _sprites2DRender();
+  _filterApply(bufferW, bufferH);
+}
+
+/**
+ * Return current canvas context
+ */
+export function getCtx() {
+  return filterEnabled ? _ctxBuffer : _ctxScreen;
+}
+
+/**
+ * Return current canvas
+ */
+export function getCanvas() {
+  return filterEnabled ? _canvasBuffer : _canvasScreen;
 }
 
 /**
