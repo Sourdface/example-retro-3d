@@ -10,7 +10,7 @@
 
 ## Page Contents
 
-1. [In the Pipes](#in-the-pipes)
+1. [Retro 3D Example](#retro-3d-example)
    1. [Page Contents](#page-contents)
    2. [How to Play](#how-to-play)
       1. [Controls](#controls)
