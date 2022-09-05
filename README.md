@@ -1,4 +1,4 @@
-# In the Pipes
+# Retro 3D Example
 
 3D retro platformer game example in vanilla JavaScript using the canvas API.
 
