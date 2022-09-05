@@ -1,8 +1,8 @@
 # In the Pipes
 
-3D retro platformer game demo in vanilla JavaScript.
+3D retro platformer game example in vanilla JavaScript using the canvas API.
 
-[Play Now](https://bradharms.github.io/inthepipes-game)
+[Play Now](https://bradharms.github.io/example-retro-3d)
 
 ![Screenshot](./screenshot.png)
 
