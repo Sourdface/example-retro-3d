@@ -50,10 +50,10 @@
  *
  * @type {Readonly<Vector2D>}
  */
-export const VECTOR_2D_0 = { x: 0, y: 0 };
+export const VECTOR_2D_0 = { x: 0, y: 0 }
 
 /**
  * Vector representing the origin of a 3-dimensional space
  * @type {Readonly<Vector3D>}
  */
-export const VECTOR_3D_0 = { x: 0, y: 0, z: 0 };
+export const VECTOR_3D_0 = { x: 0, y: 0, z: 0 }

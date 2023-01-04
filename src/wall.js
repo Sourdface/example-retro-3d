@@ -1,6 +1,6 @@
 // @ts-check
 
-import * as Draw3D from './draw3d.js';
+import * as Draw3D from './draw3d.js'
 
 /**
  * @typedef {Draw3D.Sprite3D & _Wall} Wall
@@ -12,9 +12,9 @@ import * as Draw3D from './draw3d.js';
 /**
  * @type {Wall[]}
  */
-export const walls = [];
+export const walls = []
 
-export function setup() {
+export function setup () {
   for (let i = 0; i < 256; i++) {
     walls.push({
       color: 0b110_101_011,
@@ -26,8 +26,8 @@ export function setup() {
       w: 0,
       x: 0,
       y: 0,
-      z: 0,
-    });
+      z: 0
+    })
   }
 }
 
@@ -42,34 +42,34 @@ export function setup() {
  * @param {boolean} solid
  * @param {boolean} visible
  */
-export function set(i, x, y, z, w, h, d, solid, visible) {
-  walls[i].x = x;
-  walls[i].y = y;
-  walls[i].z = z;
-  walls[i].w = w;
-  walls[i].h = h;
-  walls[i].d = d;
-  walls[i].solid = solid;
-  walls[i].visible = visible;
+export function set (i, x, y, z, w, h, d, solid, visible) {
+  walls[i].x = x
+  walls[i].y = y
+  walls[i].z = z
+  walls[i].w = w
+  walls[i].h = h
+  walls[i].d = d
+  walls[i].solid = solid
+  walls[i].visible = visible
 }
 
 /**
  * Returns the index of the first wall that is neither visible nor solid.
  * @returns {number}
  */
-export function next() {
+export function next () {
   for (let i = 0; i < walls.length; i++) {
     if (!walls[i].visible && !walls[i].solid) {
-      return i;
+      return i
     }
   }
-  return -1;
+  return -1
 }
 
-export function update() {
+export function update () {
   for (let i = 0; i < walls.length; i++) {
     if (walls[i].visible) {
-      Draw3D.queueSprite3D(walls[i]);
+      Draw3D.queueSprite3D(walls[i])
     }
   }
 }

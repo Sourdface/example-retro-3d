@@ -41,7 +41,7 @@
  *
  * @type {Floats}
  */
-const _floatsTemp = [0, 0, 0];
+const _floatsTemp = [0, 0, 0]
 
 /**
  * Convert a minimal palette format color to rgba floating point components
@@ -49,10 +49,10 @@ const _floatsTemp = [0, 0, 0];
  * @param {MPal} mpal
  * @param {Floats} floats Stores the result of the operation
  */
-export function mpalToFloats(mpal, floats) {
-  floats[0] = ((mpal & 0b111_000_000) >>> 6) / 0b111;
-  floats[1] = ((mpal & 0b000_111_000) >>> 3) / 0b111;
-  floats[2] = ((mpal & 0b000_000_111) >>> 0) / 0b111;
+export function mpalToFloats (mpal, floats) {
+  floats[0] = ((mpal & 0b111_000_000) >>> 6) / 0b111
+  floats[1] = ((mpal & 0b000_111_000) >>> 3) / 0b111
+  floats[2] = ((mpal & 0b000_000_111) >>> 0) / 0b111
 }
 
 /**
@@ -60,12 +60,12 @@ export function mpalToFloats(mpal, floats) {
  * @param {Floats} floats
  * @return {MPal}
  */
-export function floatsToMpal([r, g, b]) {
+export function floatsToMpal ([r, g, b]) {
   return (
-    (((r * 0b111) & 0b111) << 6)
-    | (((g * 0b111) & 0b111) << 3)
-    | (((b * 0b111) & 0b111) << 0)
-  ) >>> 0;
+    (((r * 0b111) & 0b111) << 6) |
+    (((g * 0b111) & 0b111) << 3) |
+    (((b * 0b111) & 0b111) << 0)
+  ) >>> 0
 }
 
 /**
@@ -74,11 +74,11 @@ export function floatsToMpal([r, g, b]) {
  * @param {MPal} mpal
  * @return {CssHex}
  */
-export function mpalToCssHex(mpal) {
-  const r = ((((mpal & 0b111_000_000) >> 6) * (0xFF / 0b111)) | 0) << 16;
-  const g = ((((mpal & 0b000_111_000) >> 3) * (0xFF / 0b111)) | 0) << 8;
-  const b = ((((mpal & 0b000_000_111) >> 0) * (0xFF / 0b111)) | 0) << 0;
-  return `#${((r | g | b) >>> 0).toString(16).toUpperCase().padStart(6, '0')}`;
+export function mpalToCssHex (mpal) {
+  const r = ((((mpal & 0b111_000_000) >> 6) * (0xFF / 0b111)) | 0) << 16
+  const g = ((((mpal & 0b000_111_000) >> 3) * (0xFF / 0b111)) | 0) << 8
+  const b = ((((mpal & 0b000_000_111) >> 0) * (0xFF / 0b111)) | 0) << 0
+  return `#${((r | g | b) >>> 0).toString(16).toUpperCase().padStart(6, '0')}`
 }
 
 /**
@@ -90,10 +90,10 @@ export function mpalToCssHex(mpal) {
  * @param {number} bf Blue factor (float)
  * @return {MPal}
  */
-export function mpalMult(mpal, rf, gf, bf) {
-  mpalToFloats(mpal, _floatsTemp);
-  _floatsTemp[0] = Math.min(Math.max(_floatsTemp[0] * rf, 0), 1);
-  _floatsTemp[1] = Math.min(Math.max(_floatsTemp[1] * gf, 0), 1);
-  _floatsTemp[2] = Math.min(Math.max(_floatsTemp[2] * bf, 0), 1);
-  return floatsToMpal(_floatsTemp);
+export function mpalMult (mpal, rf, gf, bf) {
+  mpalToFloats(mpal, _floatsTemp)
+  _floatsTemp[0] = Math.min(Math.max(_floatsTemp[0] * rf, 0), 1)
+  _floatsTemp[1] = Math.min(Math.max(_floatsTemp[1] * gf, 0), 1)
+  _floatsTemp[2] = Math.min(Math.max(_floatsTemp[2] * bf, 0), 1)
+  return floatsToMpal(_floatsTemp)
 }

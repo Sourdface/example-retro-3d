@@ -37,13 +37,13 @@ const _DEFAULT_INPUT_STATE = {
   pressed: false,
   pressedPrevious: false,
   justPressed: false,
-  justReleased: false,
-};
+  justReleased: false
+}
 
 /**
  * @type {Gamepad|null}
  */
-let _gamepad = null;
+let _gamepad = null
 
 /**
  * Maps key codes to input names.
@@ -55,8 +55,8 @@ export const keyInputs = {
   ArrowRight: 'right',
   ArrowUp: 'up',
   ArrowDown: 'down',
-  ' ': 'a',
-};
+  ' ': 'a'
+}
 
 /**
  * @type {{ [key: number]: keyof InputStates }}
@@ -67,8 +67,8 @@ export const gamepadButtonInputs = {
   12: 'up',
   13: 'down',
   14: 'left',
-  15: 'right',
-};
+  15: 'right'
+}
 
 /**
  * User input state for the current and previous frames.
@@ -81,24 +81,24 @@ export const state = {
   up: { ..._DEFAULT_INPUT_STATE },
   down: { ..._DEFAULT_INPUT_STATE },
   a: { ..._DEFAULT_INPUT_STATE },
-  b: { ..._DEFAULT_INPUT_STATE },
-};
+  b: { ..._DEFAULT_INPUT_STATE }
+}
 
 /**
  * @param {KeyboardEvent} e
  */
-function _onKeyDown(e) {
+function _onKeyDown (e) {
   if (e.key in keyInputs) {
-    /** @type {InputState} */ (state[keyInputs[e.key]]).pressed = true;
+    /** @type {InputState} */ (state[keyInputs[e.key]]).pressed = true
   }
 }
 
 /**
  * @param {KeyboardEvent} e
  */
-function _onKeyUp(e) {
+function _onKeyUp (e) {
   if (e.key in keyInputs) {
-    /** @type {InputState} */ (state[keyInputs[e.key]]).pressed = false;
+    /** @type {InputState} */ (state[keyInputs[e.key]]).pressed = false
   }
 }
 
@@ -106,44 +106,44 @@ function _onKeyUp(e) {
  *
  * @param {GamepadEvent} e
  */
-function _onGamepadConnected(e) {
+function _onGamepadConnected (e) {
   if (!_gamepad) {
-    _gamepad = e.gamepad;
+    _gamepad = e.gamepad
   }
 }
 
 /**
  * @param {GamepadEvent} e
  */
-function _onGamepadDisconnected(e) {
+function _onGamepadDisconnected (e) {
 
 }
 
-export function setup() {
-  window.addEventListener('keydown', _onKeyDown);
-  window.addEventListener('keyup', _onKeyUp);
-  window.addEventListener('gamepadconnected', _onGamepadConnected);
-  window.addEventListener('gamepaddisconnected', _onGamepadDisconnected);
+export function setup () {
+  window.addEventListener('keydown', _onKeyDown)
+  window.addEventListener('keyup', _onKeyUp)
+  window.addEventListener('gamepadconnected', _onGamepadConnected)
+  window.addEventListener('gamepaddisconnected', _onGamepadDisconnected)
 }
 
 /**
  * Runs once per frame for this module, but before `update()` for this or any other module is called.
  */
-export function preUpdate() {
+export function preUpdate () {
   if (!_gamepad) {
-    return;
+    return
   }
   for (const gamepad of navigator.getGamepads()) {
     if (!gamepad || gamepad.index !== _gamepad.index) {
-      continue;
+      continue
     }
 
     for (const btnId in gamepadButtonInputs) {
       if (!(btnId in gamepad.buttons)) {
-        continue;
+        continue
       }
       /** @type {InputState} */ (state[gamepadButtonInputs[btnId]])
-        .pressed = gamepad.buttons[btnId].pressed;
+        .pressed = gamepad.buttons[btnId].pressed
     }
   }
 }
@@ -151,15 +151,15 @@ export function preUpdate() {
 /**
  * Runs once per frame for this module
  */
-export function update() {
+export function update () {
   for (const key in state) {
     if (!state[key]) {
-      continue;
+      continue
     }
     /** @type {InputState} */
-    const input = state[key];
-    input.justPressed = !input.pressedPrevious && input.pressed;
-    input.justReleased = input.pressedPrevious && !input.pressed;
-    input.pressedPrevious = input.pressed;
+    const input = state[key]
+    input.justPressed = !input.pressedPrevious && input.pressed
+    input.justReleased = input.pressedPrevious && !input.pressed
+    input.pressedPrevious = input.pressed
   }
 }
