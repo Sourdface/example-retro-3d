@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    * {
+      image-rendering: pixelated;
+    }
+
+    html {
+      background-color: #000;
+      color: #FFF;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    html,
+    body,
+    canvas,
+    .click-to-fullscreen {
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+    }
+
+    canvas,
+    .click-to-fullscreen {
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+
+    .click-to-fullscreen {
+      background-color: #000000CC;
+      padding: 0;
+      margin: 0;
+    }
+
+    .click-to-fullscreen p {
+      text-align: center;
+      font-size: 50px;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      line-height: 50px;
+      transform: translateY(50%);
+    }
+  </style>
+  <script type="module" src="src/main.js"></script>
+</head>
+
+<body>
+  <canvas id="canvas"></canvas>
+  <!-- <div class="click-to-fullscreen"><p>Click to enter fullscreen mode</p></div> -->
+</body>
+
+</html>
